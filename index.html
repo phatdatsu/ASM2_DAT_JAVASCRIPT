@@ -11,7 +11,7 @@
       <a href="index.html" class="shop-logo">DATSU Store</a>
       <div class="shop-search">
         <input type="text" id="search-keyword" placeholder="Tìm kiếm sản phẩm..." />
-        <button type="button" onclick="handleSearch()">🔍</button>
+        <button type="button" onclick="handleSearch()">Tìm Kiếm</button>
       </div>
       <div class="shop-user-actions" id="user-actions-container"></div>
     </header>
@@ -67,7 +67,7 @@
                   gap: 8px;
                 "
               >
-                🔥 BIG SALE - SIÊU ƯU ĐÃI 🔥
+               BIG SALE - SIÊU ƯU ĐÃI 
               </h2>
               <p style="font-size: 13px; opacity: 0.9; margin-top: 4px">
                 ⚡ Số lượng giới hạn - Nhanh tay kẻo hết!
@@ -172,7 +172,7 @@
                         ${p.oldPrice ? `<span class="old-price">${formatPrice(p.oldPrice)}</span>` : ""}
                         <span class="sale-price">${formatPrice(p.price)}</span>
                     </div>
-                    <div style="font-size: 11px; color: #b91c1c; font-weight: 700; margin-bottom: 8px;">🔥 Tồn kho: còn ${p.stock} sản phẩm</div>
+                    <div style="font-size: 11px; color: #b91c1c; font-weight: 700; margin-bottom: 8px;"> Tồn kho: còn ${p.stock} sản phẩm</div>
                     <div class="card-actions">
                         <a href="detail.html?id=${p.id}" class="btn" style="flex:1; background:#fff; color:#2563eb; border:1px solid #cbd5e1; text-align:center;">Chi tiết</a>
                         <button class="btn" type="button" onclick="addToCart(${p.id})" style="flex:1; background:#fbbf24; color:#111827;">🛒 Thêm</button>
