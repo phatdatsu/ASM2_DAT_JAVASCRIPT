@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DATSU Store - Giỏ hàng</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="shop-header">
+      <a href="index.html" class="shop-logo">DATSU Store</a>
+      <div class="shop-search">
+        <input type="text" id="search-keyword" placeholder="Tìm kiếm sản phẩm..." />
+        <button type="button" onclick="handleSearch()">🔍</button>
+      </div>
+      <div class="shop-user-actions" id="user-actions-container"></div>
+    </header>
+
+    <nav class="shop-subnav">
+      <div class="shop-subnav-inner">
+        <a href="index.html">Trang chủ</a>
+        <a href="products.html">Sản phẩm</a>
+        <a href="contact.html">Liên hệ</a>
+        <a href="about.html">Giới thiệu</a>
+      </div>
+    </nav>
+
+    <main class="container" style="padding: 40px 0; flex: 1">
+      <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 24px; color: #0f172a">
+        🛒 Giỏ hàng của bạn
+      </h1>
+
+      <div class="cart-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px">
+        <div
+          class="cart-items"
+          id="cart-items-list"
+          style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0"
+        >
+          <!-- Danh sách sản phẩm giỏ hàng hiển thị ở đây -->
+        </div>
+        <div
+          class="cart-summary-box"
+          style="
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: fit-content;
+          "
+        >
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px">Tóm tắt đơn hàng</h3>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 12px;
+              font-size: 14px;
+            "
+          >
+            <span>Tạm tính:</span>
+            <strong id="cart-subtotal">0 đ</strong>
+          </div>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 12px;
+              font-size: 14px;
+            "
+          >
+            <span>Phí giao hàng:</span>
+            <strong>25.000 đ</strong>
+          </div>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 20px;
+              font-size: 15px;
+              border-top: 1px solid #e2e8f0;
+              padding-top: 12px;
+            "
+          >
+            <span>Tổng cộng:</span>
+            <strong id="cart-total" style="color: #e11d48; font-size: 18px">0 đ</strong>
+          </div>
+          <a
+            href="checkout.html"
+            class="btn"
+            style="
+              width: 100%;
+              text-align: center;
+              background: #22c55e;
+              color: #fff;
+              padding: 12px;
+              border-radius: 10px;
+              text-decoration: none;
+              display: inline-block;
+              font-weight: 700;
+            "
+            >Tiến hành thanh toán →</a
+          >
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container"><p>© 2026 ShopDienTu - DATSU - FPT Polytechnic</p></div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+      function renderCartPage() {
+        const listContainer = document.getElementById("cart-items-list");
+        const subtotalEl = document.getElementById("cart-subtotal");
+        const totalEl = document.getElementById("cart-total");
+
+        let currentCart =
+          JSON.parse(localStorage.getItem("shop_cart")) ||
+          JSON.parse(localStorage.getItem("cofe_cart")) ||
+          [];
+
+        if (!listContainer) return;
+
+        if (currentCart.length === 0) {
+          listContainer.innerHTML = `<p style="text-align: center; color: #64748b; padding: 40px;">Giỏ hàng của bạn đang trống.</p>`;
+          if (subtotalEl) subtotalEl.textContent = "0 đ";
+          if (totalEl) totalEl.textContent = "25.000 đ";
+          return;
+        }
+
+        let totalAmount = 0;
+        listContainer.innerHTML = currentCart
+          .map((item) => {
+            let itemTotal = item.price * item.quantity;
+            totalAmount += itemTotal;
+            return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #e2e8f0; gap: 15px;">
+              <img src="${item.image}" alt="${item.name}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px;" />
+              <div style="flex: 1;">
+                <h4 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">${item.name}</h4>
+                <p style="font-size: 13px; color: #e11d48; font-weight: 700;">${formatPrice(item.price)}</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" onclick="changeQty(${item.id}, -1)" style="padding: 4px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer;">-</button>
+                <span style="font-weight: 600; min-width: 20px; text-align: center;">${item.quantity}</span>
+                <button type="button" onclick="changeQty(${item.id}, 1)" style="padding: 4px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer;">+</button>
+              </div>
+              <button type="button" onclick="removeCartItem(${item.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 600; margin-left: 10px;">Xóa</button>
+            </div>
+          `;
+          })
+          .join("");
+
+        if (subtotalEl) subtotalEl.textContent = formatPrice(totalAmount);
+        let shippingFee = 25000;
+        if (totalEl) totalEl.textContent = formatPrice(totalAmount + shippingFee);
+      }
+
+      window.changeQty = function (id, delta) {
+        let currentCart =
+          JSON.parse(localStorage.getItem("shop_cart")) ||
+          JSON.parse(localStorage.getItem("cofe_cart")) ||
+          [];
+        let item = currentCart.find((p) => p.id === id);
+        if (item) {
+          item.quantity += delta;
+          if (item.quantity <= 0) {
+            currentCart = currentCart.filter((p) => p.id !== id);
+          }
+          localStorage.setItem("shop_cart", JSON.stringify(currentCart));
+          renderCartPage();
+          if (typeof updateCartBadge === "function") updateCartBadge();
+        }
+      };
+
+      window.removeCartItem = function (id) {
+        let currentCart =
+          JSON.parse(localStorage.getItem("shop_cart")) ||
+          JSON.parse(localStorage.getItem("cofe_cart")) ||
+          [];
+        currentCart = currentCart.filter((p) => p.id !== id);
+        localStorage.setItem("shop_cart", JSON.stringify(currentCart));
+        renderCartPage();
+        if (typeof updateCartBadge === "function") updateCartBadge();
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          renderCartPage();
+        }, 50);
+      });
+
+      function handleSearch() {
+        const kw = document.getElementById("search-keyword")?.value.trim();
+        if (kw) window.location.href = `products.html?search=${encodeURIComponent(kw)}`;
+      }
+    </script>
+  </body>
+</html>
